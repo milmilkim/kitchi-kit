@@ -1,6 +1,19 @@
-import Image from "next/image";
-import { Button } from "primereact/button";
+'use client';
 
+import { Button } from 'primereact/button';
+
+import { useContext } from 'react';
+import { ModalContext } from '@/contexts/ModalContext';
 export default function Home() {
-  return <Button>버튼 클릭</Button>;
+  const { openModal } = useContext(ModalContext);
+  const handleClick = () => {
+    console.log('버튼 클릭');
+    openModal();
+  };
+  return (
+    <>
+      <Button onClick={handleClick}>버튼 클릭</Button>
+      <Button onClick={handleClick}>버튼 클릭</Button>
+    </>
+  );
 }
