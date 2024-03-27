@@ -6,7 +6,7 @@ import "primeicons/primeicons.css";
 import "@/app/globals.css";
 import "primereact/resources/themes/viva-light/theme.css";
 
-import MainLayout from "../components/MainLayout";
+import MainLayout from "../components/layout/MainLayout";
 import { ModalProvider } from "@/contexts/ModalContext";
 
 import Modal from "@/components/Modal";
