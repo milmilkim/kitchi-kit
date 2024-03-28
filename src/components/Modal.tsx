@@ -14,7 +14,6 @@ const GlobalModal: React.FC = () => {
         .filter((modal) => modal.isVisible)
         .map((modal) => (
           <Dialog key={modal.id} visible={modal.isVisible} onHide={() => closeModal(modal.id)} modal={false}>
-            모달 테스트: {modal.id}
             {modal.component ? createElement(modal.component as React.ComponentType<any>) : null}
           </Dialog>
         ))}

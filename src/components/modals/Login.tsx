@@ -43,7 +43,7 @@ const Login = () => {
 
   return (
     <div>
-      <div>
+      <div className=" w-96">
         <p className="my-4">로그인</p>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
           <div className="mb-4 flex items-center">
@@ -57,6 +57,7 @@ const Login = () => {
                   message: '이메일 형식에 맞지 않습니다.',
                 },
               })}
+              autoComplete="kitch-email"
               className="rounded-lg p-2 w-full"
             />
           </div>
@@ -64,6 +65,7 @@ const Login = () => {
             <input
               className="rounded-lg p-2 w-full"
               type="password"
+              autoComplete="kitch-password"
               placeholder="비밀번호"
               {...register('password', {
                 required: '비밀번호를 입력하세요',
