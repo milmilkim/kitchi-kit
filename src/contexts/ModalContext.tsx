@@ -1,37 +1,38 @@
 'use client';
 
-import React, { PropsWithChildren, createContext, useContext, useState } from 'react';
+import React, { PropsWithChildren, createContext, useState } from 'react';
 
-interface ModalState {
+interface Modal {
+  id: string;
   isVisible: boolean;
+  component?: React.ComponentType<any> | React.ReactNode;
 }
 
-const initialModalState: ModalState = {
-  isVisible: false,
-};
+const initialModalState: Modal[] = [];
 
 const ModalContext = createContext<{
-  modalState: ModalState;
-  openModal: () => void;
-  closeModal: () => void;
+  modals: Modal[];
+  openModal: (id: string, component: Modal['component']) => void;
+  closeModal: (id: string) => void;
 }>({
-  modalState: initialModalState,
+  modals: initialModalState,
   openModal: () => {},
   closeModal: () => {},
 });
 
 export const ModalProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  const [modalState, setModalState] = useState<ModalState>(initialModalState);
+  const [modals, setModals] = useState<Modal[]>(initialModalState);
 
-  const openModal = () => {
-    setModalState({ isVisible: true });
+  const openModal = (id: string, component: Modal['component']) => {
+    if (modals.some((modal) => modal.id === id)) return;
+    setModals([...modals, { id, isVisible: true, component }]);
   };
 
-  const closeModal = () => {
-    setModalState(initialModalState);
+  const closeModal = (id: string) => {
+    setModals(modals.filter((modal) => modal.id !== id));
   };
 
-  return <ModalContext.Provider value={{ modalState, openModal, closeModal }}>{children}</ModalContext.Provider>;
+  return <ModalContext.Provider value={{ modals, openModal, closeModal }}>{children}</ModalContext.Provider>;
 };
 
 export default ModalProvider;

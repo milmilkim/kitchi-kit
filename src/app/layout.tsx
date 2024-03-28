@@ -1,7 +1,7 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
 import { PrimeReactProvider } from 'primereact/api';
 import 'primeicons/primeicons.css';
+import { NextAuthProvider } from '@/app/SessionProvider';
 
 import '@/app/globals.css';
 import 'primereact/resources/themes/viva-light/theme.css';
@@ -11,13 +11,25 @@ import { ModalProvider } from '@/contexts/ModalContext';
 
 import Modal from '@/components/Modal';
 
-const inter = Inter({ subsets: ['latin'] });
+import config from '@/meta';
 
 export const metadata: Metadata = {
-  title: 'KitchiKit',
-  description: '키치하게 갑시다',
+  title: config.APP_KOR_NAME,
+  description: config.APP_DESCRIPTION,
+  themeColor: config.META_THEME_COLOR,
+
+  openGraph: {
+    title: config.APP_KOR_NAME,
+    description: config.APP_DESCRIPTION,
+    siteName: config.APP_KOR_NAME,
+    locale: 'ko_KR',
+    type: 'website',
+  },
 };
 
+export const viewPort: Viewport = {
+  themeColor: '#B1C1EE',
+};
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,13 +37,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={inter.className}>
-        <PrimeReactProvider>
-          <ModalProvider>
-            <MainLayout>{children}</MainLayout>
-            <Modal />
-          </ModalProvider>
-        </PrimeReactProvider>
+      <body>
+        <NextAuthProvider>
+          <PrimeReactProvider>
+            <ModalProvider>
+              <MainLayout>{children}</MainLayout>
+              <Modal />
+            </ModalProvider>
+          </PrimeReactProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );

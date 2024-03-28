@@ -7,7 +7,7 @@ import { Tooltip } from 'primereact/tooltip';
 import { TerminalService } from 'primereact/terminalservice';
 import { Toast } from 'primereact/toast';
 
-import './demo.css';
+import '../demo.css';
 import TopMenu from './TopMenu';
 
 export default function AdvanceDemo({ children }: PropsWithChildren) {

@@ -1,16 +1,24 @@
 'use client';
 
-import React from 'react';
+import React, { createElement } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { useContext } from 'react';
 import { ModalContext } from '@/contexts/ModalContext';
 
 const GlobalModal: React.FC = () => {
-  const { modalState, closeModal } = useContext(ModalContext);
+  const { modals, closeModal } = useContext(ModalContext);
+
   return (
-    <Dialog visible={modalState.isVisible} onHide={closeModal}>
-      모달 테스트
-    </Dialog>
+    <>
+      {modals
+        .filter((modal) => modal.isVisible)
+        .map((modal) => (
+          <Dialog key={modal.id} visible={modal.isVisible} onHide={() => closeModal(modal.id)} modal={false}>
+            모달 테스트: {modal.id}
+            {modal.component ? createElement(modal.component as React.ComponentType<any>) : null}
+          </Dialog>
+        ))}
+    </>
   );
 };
 
