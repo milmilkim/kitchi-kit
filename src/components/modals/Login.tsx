@@ -2,26 +2,29 @@
 
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { signIn } from 'next-auth/react';
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import { ModalContext } from '@/contexts/ModalContext';
+import { Button } from 'primereact/button';
+import Signup from './Signup';
+
+interface LoginForm {
+  email: string;
+  password: string;
+}
+
 const WarnIcon: React.FC<{ message: string }> = ({ message }) => {
   return <p className="flex flex-row items-center text-red-800">{message}</p>;
 };
 const Login = () => {
-  const { closeModal } = useContext(ModalContext);
+  const { closeModal, openModal } = useContext(ModalContext);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Inputs>();
+  } = useForm<LoginForm>();
 
-  type Inputs = {
-    email: string;
-    password: string;
-  };
-
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  const onSubmit: SubmitHandler<LoginForm> = async (data) => {
     try {
       const res = await signIn('credentials', {
         email: data.email,
@@ -41,6 +44,15 @@ const Login = () => {
     }
   };
 
+  const handleClickSignBtn = useCallback(
+    async (e: React.MouseEvent) => {
+      e.preventDefault();
+      await closeModal('login');
+      openModal('signup', Signup);
+    },
+    [openModal, closeModal]
+  );
+
   return (
     <div>
       <div className=" w-96">
@@ -58,12 +70,12 @@ const Login = () => {
                 },
               })}
               autoComplete="kitch-email"
-              className="rounded-lg p-2 w-full"
+              className="rounded-lg p-2 w-full border"
             />
           </div>
           <div className="mb-4 flex items-center">
             <input
-              className="rounded-lg p-2 w-full"
+              className="rounded-lg p-2 w-full border"
               type="password"
               autoComplete="kitch-password"
               placeholder="비밀번호"
@@ -74,9 +86,8 @@ const Login = () => {
           </div>
           {errors.email?.message && <WarnIcon message={errors.email.message} />}
           {errors.password?.message && <WarnIcon message={errors.password.message} />}
-          <button type="submit" className="bg-blue-500 text-white rounded-lg p-2 w-full hover:bg-blue-800 ease-in duration-100 my-5">
-            로그인
-          </button>
+          <Button type="submit" label="로그인" />
+          <Button onClick={handleClickSignBtn} label="회원가입" link />
         </form>
       </div>
     </div>

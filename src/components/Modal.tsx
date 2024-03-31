@@ -13,7 +13,7 @@ const GlobalModal: React.FC = () => {
       {modals
         .filter((modal) => modal.isVisible)
         .map((modal) => (
-          <Dialog key={modal.id} visible={modal.isVisible} onHide={() => closeModal(modal.id)} modal={false}>
+          <Dialog key={modal.id} visible={modal.isVisible} onHide={() => closeModal(modal.id)} modal={false} maximizable={false}>
             {modal.component ? createElement(modal.component as React.ComponentType<any>) : null}
           </Dialog>
         ))}

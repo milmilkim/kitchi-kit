@@ -11,7 +11,7 @@ import { useContext } from 'react';
 import Login from '../modals/Login';
 
 const TopMenu = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const { openModal } = useContext(ModalContext);
 
   const start = <i className="pi pi-apple"></i>;
@@ -36,8 +36,13 @@ const TopMenu = () => {
         className: 'menubar-root',
         items: [
           {
-            label: '로그아웃',
+            label: '내 정보',
             icon: 'pi pi-fw pi-user',
+            command: () => true,
+          },
+          {
+            label: '로그아웃',
+            icon: 'pi pi-fw pi-sign-out',
             command: () => signOut(),
           },
         ],
