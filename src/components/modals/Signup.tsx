@@ -1,13 +1,13 @@
 'use client';
 
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { useCallback, useContext, useRef, useState } from 'react';
-import { ModalContext } from '@/contexts/ModalContext';
+import { SubmitHandler, useForm, useFormContext, Controller } from 'react-hook-form';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { signup as signupAction } from '@/app/actions/signupAction';
-import { FileUpload } from 'primereact/fileupload';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
+import { useFormState } from 'react-dom';
+import { cls } from '@/utils/cls';
 
 const WarnIcon: React.FC<{ message: string }> = ({ message }) => {
   return <p className="w-full my-1 text-red-800">{message}</p>;
@@ -17,21 +17,35 @@ interface SignupForm {
   email: string;
   password: string;
   nickname: string;
+  profileImage: File;
 }
 
 const Signup = () => {
-  const { closeModal, openModal } = useContext(ModalContext);
   const fileUploadRef = useRef<HTMLInputElement | null>(null);
   const [previewImage, setPreviewImage] = useState<string | ArrayBuffer | null>(null);
+  const [state, formAction] = useFormState<any, FormData>(signupAction, null);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64Image = reader.result;
-      setPreviewImage(base64Image);
-    };
-    reader.readAsDataURL(acceptedFiles[0]);
-  }, []);
+  const {
+    register,
+    // handleSubmit,
+    formState: { errors, isValid },
+    setValue,
+    control,
+    watch,
+  } = useForm<SignupForm>();
+
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64Image = reader.result;
+        setPreviewImage(base64Image);
+        setValue('profileImage', acceptedFiles[0]);
+      };
+      reader.readAsDataURL(acceptedFiles[0]);
+    },
+    [setValue]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -40,30 +54,26 @@ const Signup = () => {
     },
   });
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignupForm>();
-
-  const onSubmit: SubmitHandler<SignupForm> = async (data) => {
-    try {
-      signupAction();
-      closeModal('signup');
-    } catch (err) {
-      if (err instanceof Error) {
-        alert(err.message);
-      } else {
-        alert('알 수 없는 에러!');
-      }
-    }
-  };
+  const profileImage = watch('profileImage');
+  const email = watch('email');
+  // const onSubmit: SubmitHandler<SignupForm> = async (data) => {
+  //   try {
+  //     closeModal('signup');
+  //   } catch (err) {
+  //     if (err instanceof Error) {
+  //       alert(err.message);
+  //     } else {
+  //       alert('알 수 없는 에러!');
+  //     }
+  //   }
+  // };
 
   return (
     <div>
+      {profileImage && profileImage.name}
       <div className=" w-96">
         <p className="my-4">회원가입</p>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+        <form action={signupAction} className="flex flex-col" encType="multipart/form-data">
           <div className="flex items-center">
             <input
               placeholder="이메일*"
@@ -97,7 +107,7 @@ const Signup = () => {
           <div className="flex items-center">
             <input
               className="rounded-lg p-2 w-full border mt-3"
-              type="password"
+              type="text"
               placeholder="닉네임*"
               {...register('nickname', {
                 required: '닉네임을 입력하세요',
@@ -106,20 +116,34 @@ const Signup = () => {
           </div>
           {errors.password?.message && <WarnIcon message={errors.password.message} />}
 
-          {previewImage ? (
+          {previewImage && (
             <div className="rounded-full my-4 cursor-pointer" {...getRootProps()}>
               <Image src={previewImage as string} alt="Image" width="250" height="250" className="rounded-full" />
             </div>
-          ) : (
-            <div {...getRootProps()} className="mt-3 border rounded-lg p-2 flex items-center justify-center cursor-pointer h-24">
-              <input {...getInputProps()} />
-              <p>프로필 이미지를 드래그 앤 드롭 하거나 클릭하세요</p>
-            </div>
           )}
+          <Controller
+            render={({ field: { onChange } }) => (
+              <div {...getRootProps()} className={cls('mt-3 border rounded-lg p-2 flex items-center justify-center cursor-pointer h-24', profileImage ? 'hidden' : '')}>
+                <input
+                  {...getInputProps({
+                    onChange: (e) => {
+                      console.log('change');
+                      console.log(e);
+                    },
+                  })}
+                  name="profileImage"
+                />
+                <p>프로필 이미지를 드래그 앤 드롭 하거나 여기를 클릭하여 업로드 하세요</p>
+              </div>
+            )}
+            name="profileImage"
+            control={control}
+          />
+
+          <div className="mt-4 flex gap-1">
+            <Button disabled={!isValid} type="submit" label="회원가입" severity="info" />
+          </div>
         </form>
-        <div className="mt-4 flex gap-1">
-          <Button type="submit" label="회원가입" severity="info" />
-        </div>
       </div>
     </div>
   );

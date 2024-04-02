@@ -16,7 +16,6 @@ import config from '@/meta';
 export const metadata: Metadata = {
   title: config.APP_KOR_NAME,
   description: config.APP_DESCRIPTION,
-  themeColor: config.META_THEME_COLOR,
 
   openGraph: {
     title: config.APP_KOR_NAME,
@@ -28,7 +27,7 @@ export const metadata: Metadata = {
 };
 
 export const viewPort: Viewport = {
-  themeColor: '#B1C1EE',
+  themeColor: config.META_THEME_COLOR,
 };
 export default function RootLayout({
   children,
