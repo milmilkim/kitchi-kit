@@ -56,24 +56,13 @@ const Signup = () => {
 
   const profileImage = watch('profileImage');
   const email = watch('email');
-  // const onSubmit: SubmitHandler<SignupForm> = async (data) => {
-  //   try {
-  //     closeModal('signup');
-  //   } catch (err) {
-  //     if (err instanceof Error) {
-  //       alert(err.message);
-  //     } else {
-  //       alert('알 수 없는 에러!');
-  //     }
-  //   }
-  // };
 
   return (
     <div>
       {profileImage && profileImage.name}
       <div className=" w-96">
         <p className="my-4">회원가입</p>
-        <form action={signupAction} className="flex flex-col" encType="multipart/form-data">
+        <form action={signupAction} className="flex flex-col">
           <div className="flex items-center">
             <input
               placeholder="이메일*"
@@ -117,27 +106,20 @@ const Signup = () => {
           {errors.password?.message && <WarnIcon message={errors.password.message} />}
 
           {previewImage && (
-            <div className="rounded-full my-4 cursor-pointer" {...getRootProps()}>
-              <Image src={previewImage as string} alt="Image" width="250" height="250" className="rounded-full" />
+            <div className="rounded-full my-4 cursor-pointer w-32 h-32" {...getRootProps()}>
+              <Image src={previewImage as string} width={128} height={128} alt="Image" className="rounded-full object-cover w-full h-full" />
             </div>
           )}
           <Controller
-            render={({ field: { onChange } }) => (
+            render={({ field }) => (
               <div {...getRootProps()} className={cls('mt-3 border rounded-lg p-2 flex items-center justify-center cursor-pointer h-24', profileImage ? 'hidden' : '')}>
-                <input
-                  {...getInputProps({
-                    onChange: (e) => {
-                      console.log('change');
-                      console.log(e);
-                    },
-                  })}
-                  name="profileImage"
-                />
+                <input onChange={field.onChange} name="profileImage" />
                 <p>프로필 이미지를 드래그 앤 드롭 하거나 여기를 클릭하여 업로드 하세요</p>
               </div>
             )}
             name="profileImage"
             control={control}
+            rules={{ required: '프로필 이미지를 업로드하세요' }}
           />
 
           <div className="mt-4 flex gap-1">
